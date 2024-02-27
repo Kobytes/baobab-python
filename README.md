@@ -1,5 +1,9 @@
 # BAOBAB - Best And Overpowered Beating Ass Brute-force
 
+<p align="center">
+  <img src="https://cdn.discordapp.com/attachments/846424833792802830/1212159848180092938/image.png?ex=65f0d2d4&is=65de5dd4&hm=204d244d4528946321b17d31e795d72c3ee1d8963a29aec10170de6096d7c939&" alt="OMG WOAH" width="500" height="500">
+</p>
+
 BAOBAB is a powerful and user-friendly GUI tool for brute-forcing MySQL passwords. It leverages the extensive [`rockyou.txt`](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt) wordlist to attempt access into MySQL databases, making it an ideal tool for testing password strength and security in MySQL servers. This latest update brings significant improvements in performance, efficiency, and user experience.
 
 ## New Features and Enhancements
