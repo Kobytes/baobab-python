@@ -19,11 +19,13 @@ def classify_password(password):
         return "[Low]"
 
 class BruteForceSQL:
-    def __init__(self, host, user, wordlist_path, output_label):
+    def __init__(self, host, user, wordlist_path, output_label, output_area, progress_bar):
         self.host = host
         self.user = user
         self.wordlist_path = wordlist_path
         self.output_label = output_label
+        self.output_area = output_area
+        self.progress_bar = progress_bar
         self.thread = None
         self.stop_thread = False
 
@@ -125,7 +127,7 @@ class BruteForceGUI:
         self.wordlist_input.insert(0, filedialog.askopenfilename())
         
     def start_brute_force(self):
-        self.brute_force_instance = BruteForceSQL(self.host_input.get(), self.user_input.get(), self.wordlist_input.get(), self.output_label)
+        self.brute_force_instance = BruteForceSQL(self.host_input.get(), self.user_input.get(), self.wordlist_input.get(), self.output_label, self.output_area, self.progress_bar)
         self.brute_force_instance.start()
 
     def stop_brute_force(self):
