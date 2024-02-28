@@ -57,10 +57,9 @@ class BruteForceSQL:
                     if connection.is_connected():
                         connection.close()
                         self.update_gui(f"Password found: {password}, Complexity: {classify_password(password)}", 100)
-                        return
+                        break
                 except mysql.connector.Error as e:
                     logging.error(f"MySQL error: {e}")
-                    time.sleep(1)
         except FileNotFoundError:
             self.update_gui("Wordlist file not found.", 0)
             logging.error("Wordlist file not found.")
