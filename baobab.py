@@ -95,7 +95,7 @@ class BruteForceGUI:
         self.user_input.pack(pady=0, padx=10)
 
         #Input pour la wordlist
-        ctk.CTkLabel(self.window, text="Path to rockyou.txt:").pack(pady=10, padx=0)
+        ctk.CTkLabel(self.window, text="Path to wordlist:").pack(pady=10, padx=0)
         wordlist_frame = ctk.CTkFrame(self.window)
         wordlist_frame.pack(pady=0, padx=50)
         self.wordlist_input = ctk.CTkEntry(wordlist_frame)
