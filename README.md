@@ -1,68 +1,83 @@
-# BAOBAB - Best And Overpowered Beating Ass Brute-force
+# BAOBAB - Best And Overpowered Beating Ass Brute-force 🚀
 
 <p align="center">
-  <img src="https://cdn.discordapp.com/attachments/846424833792802830/1212159848180092938/image.png?ex=65f0d2d4&is=65de5dd4&hm=204d244d4528946321b17d31e795d72c3ee1d8963a29aec10170de6096d7c939&" alt="OMG WOAH" width="500" height="500">
+  <img src="https://i.imgur.com/CIAo3RN.png" alt="BAOBAB Logo" width="500" height="500">
 </p>
 
-BAOBAB is a powerful and user-friendly GUI tool for brute-forcing MySQL passwords. It leverages the extensive [`rockyou.txt`](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt) wordlist to attempt access into MySQL databases, making it an ideal tool for testing password strength and security in MySQL servers. This latest update brings significant improvements in performance, efficiency, and user experience.
+Welcome to BAOBAB version 1.1! 🎉 This release brings significant enhancements to my robust MySQL brute-forcing tool. BAOBAB uses the extensive [`rockyou.txt (not mandatory but highly recommended)`](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt) wordlist, making it a prime choice for assessing password security on MySQL servers. Let’s dive into the latest improvements and features!
 
-## New Features and Enhancements
+---
 
-- Object-Oriented Programming Refactor:
-    - Introduction of BruteForceSQL class for better code organization and maintainability.
-    - Enhanced readability and structure through OOP practices.
+## 📢 Important Behavioral Update in Version 1.1
 
-- Improved User Interface:
-    - Creation of BruteForceGUI class for a clear separation between UI logic and business logic.
-    - Redesigned user interface for a more intuitive and user-friendly experience.
+I'm excited to announce a significant behavioral change in BAOBAB with the introduction of Thread Modes in version 1.1! This update offers a more tailored brute-forcing experience by allowing users to choose from different operational modes, each utilizing a specific number of threads. This new feature enhances both performance and user control.
 
-- Brute-Force Process Interruption Feature:
-    - Ability to stop the ongoing brute-force process, offering more control and flexibility to the users.
-    - Performance and Security Optimizations:
+### Understanding Thread Modes 🧵
 
-- Improved thread management for enhanced performance.
-- Strengthened exception handling and logging for increased reliability.
+Thread Modes determine how many parallel threads are engaged during the brute-force process. While more threads can speed up the brute-forcing, it's crucial to understand their impact:
+
+- **More threads can lead to faster results**, but they also consume more system resources.
+- **Choosing the right mode** depends on your system capabilities and the urgency of the brute-force task.
+- **Be cautious with resource-intensive modes** on systems with limited processing power to avoid system slowdowns.
+
+### 📊 Thread Mode Breakdown
+
+Here's a quick overview of each mode and its corresponding thread count:
+
+| Mode          | Thread Count |
+|---------------|--------------|
+| Chill Mode    | 2 Threads    |
+| Normal Mode   | 5 Threads    |
+| Aggressive Mode | 10 Threads |
+
+Choose the mode that best fits your needs and system capabilities. The Chill Mode is resource-friendly, Normal Mode balances speed and resource use, and Aggressive Mode harnesses maximum power for the quickest results.
+
+---
 
 ## Features
 
-- **User-Friendly Interface**: Built with `customtkinter` for a modern and easy-to-use interface.
-- **Real-Time Feedback**: Provides live updates on the brute-forcing process with a detailed log and progress bar.
-- **Complexity Analysis**: Classifies found passwords based on their complexity (low, medium, high).
-- **Error Logging**: Records errors into a log file for troubleshooting and analysis.
+- **Intuitive Interface**: Crafted with `customtkinter` for a sleek and easy-to-navigate experience.
+- **Live Updates**: Real-time feedback with a comprehensive log and progress tracking. 📊
+- **Password Complexity Analysis**: Classifies the complexity of uncovered passwords. 🔒
+- **Error Tracking**: Maintains a detailed log file for error analysis and troubleshooting. 📝
 
-## Installation
+## 📦 Installation
 
-To use BAOBAB, ensure you have Python installed on your system along with the necessary libraries. 
+Ensure Python and the required libraries are installed on your system:
 
-1. Clone this repository or download the source code.
-2. Install required Python packages:
+1. Clone or download the source code.
+2. Install dependencies:
 
     ```bash
     pip install mysql-connector-python customtkinter
     ```
 
-3. Run the script:
+3. Launch the script:
 
     ```bash
     python baobab.py
     ```
 
-## Usage
+## 🕹️ Usage
 
-1. Start the application by running `baobab.py`.
-2. Enter the target MySQL host and user credentials.
-3. Choose or enter the path to your `rockyou.txt` wordlist.
-4. Click "Start Brute-Force" to begin the brute-forcing process.
-5. Monitor the progress in the real-time log and progress bar.
+1. Run `baobab.py` to start.
+2. Enter the MySQL host and user details.
+3. Select or input the path to your `rockyou.txt` wordlist.
+4. Click "Start Brute-Force" to initiate.
+5. Monitor progress in the log and progress bar.
 
-## Contributing
+## 💬 Contributing
 
-Contributions to BAOBAB are welcome! Whether it's feature requests, bug reports, or code contributions, please feel free to make your suggestions known.
+Your contributions make BAOBAB better! Feature suggestions, bug reports, or code contributions are all welcome.
 
-## Disclaimer
+## ⚠️ Disclaimer
 
-BAOBAB is developed for educational and ethical testing purposes only. The authors are not responsible for any misuse or illegal activities. Always obtain explicit permission before testing any system.
+BAOBAB is for educational and ethical testing purposes only. We're not liable for misuse or illegal activities. Always get explicit permission before testing any system.
 
 ---
 
 aHR0cHM6Ly93d3cub3RlcmlhLmZyLw==
+
+---
+
+**Version 1.1 is a leap towards making BAOBAB more efficient, user-friendly, and robust. Enjoy the enhanced experience!** 🌟🚀
