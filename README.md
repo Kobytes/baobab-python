@@ -62,9 +62,10 @@ Ensure Python and the required libraries are installed on your system:
 
 1. Run `baobab.py` to start.
 2. Enter the MySQL host and user details.
-3. Select or input the path to your `rockyou.txt` wordlist.
-4. Click "Start Brute-Force" to initiate.
-5. Monitor progress in the log and progress bar.
+3. Select or input the path to your `rockyou.txt` or any other wordlist.
+4. Choose your bruteforce mode wisely between "Chill", "Normal" and "Aggressive".
+5. Click "Start Brute-Force" to initiate.
+7. Monitor progress in the log and progress bar.
 
 ## 💬 Contributing
 
@@ -72,7 +73,7 @@ Your contributions make BAOBAB better! Feature suggestions, bug reports, or code
 
 ## ⚠️ Disclaimer
 
-BAOBAB is for educational and ethical testing purposes only. We're not liable for misuse or illegal activities. Always get explicit permission before testing any system.
+BAOBAB is for educational and ethical testing purposes only. I'm not liable for misuse or illegal activities. Always get explicit permission before testing any system.
 
 ---
 
